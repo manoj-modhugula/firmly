@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { getModels } from '../lib/api';
 import { connectionErrors } from '../lib/navigation';
+import { PORTFOLIO_MODE } from '../lib/runtime';
 import { AUTOMATIC_MODEL_ID, MODEL_KEY_URL, SEARCH_KEY_URL } from '../lib/connections';
 import type { Config, Settings as ResearchSettings } from '../lib/types';
 
@@ -20,6 +21,7 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
   const [submitted, setSubmitted] = useState(false);
   const errors = connectionErrors(draft, config);
   useEffect(() => {
+    if (PORTFOLIO_MODE) return;
     let active = true;
     const controller = new AbortController();
     getModels(controller.signal)
@@ -47,13 +49,16 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
     <main id="main-content" className="a-center a-settings">
       <h1>Research settings</h1>
       <p className="a-sub">
-        Connect your services for live research. The sample works without keys.
+        {PORTFOLIO_MODE
+          ? 'Choose a model and manage research connections.'
+          : 'Connect your services for live research. The sample works without keys.'}
       </p>
       <form
         className="a-panel settings-panel"
         noValidate
         onSubmit={(event) => {
           event.preventDefault();
+          if (PORTFOLIO_MODE) return;
           setSubmitted(true);
           if (errors.accessKey || errors.searchKey) {
             requestAnimationFrame(() =>
@@ -74,6 +79,7 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
               <label>
                 Connection
                 <select
+                  disabled={PORTFOLIO_MODE}
                   value={draft.connection}
                   onChange={(event) => update('connection', event.target.value)}
                 >
@@ -86,6 +92,7 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
               <label>
                 Model
                 <select
+                  disabled={PORTFOLIO_MODE}
                   value={draft.model}
                   onChange={(event) => update('model', event.target.value)}
                 >
@@ -129,6 +136,7 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
                 </a>
               </span>
               <input
+                disabled={PORTFOLIO_MODE}
                 aria-label="Model access key"
                 aria-invalid={submitted && !!errors.accessKey}
                 aria-describedby="model-key-feedback"
@@ -161,6 +169,7 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
               </a>
             </span>
             <input
+              disabled={PORTFOLIO_MODE}
               aria-label="Web research key"
               aria-invalid={submitted && !!errors.searchKey}
               aria-describedby="search-key-feedback"
@@ -181,16 +190,20 @@ export function Settings({ value, config, onSave, onBack, continueCompany, savin
               {errors.searchKey}
             </p>
           )}
-          <p>
-            Keys clear on reload. When research starts, they are sent to Firmly’s server and the
-            connected services.
-          </p>
+          {!PORTFOLIO_MODE && (
+            <p>
+              Keys clear on reload. When research starts, they are sent to Firmly’s server and the
+              connected services.
+            </p>
+          )}
         </div>
         <p className="connection-verification">
-          Not verified. Credentials are checked when research starts.
+          {PORTFOLIO_MODE
+            ? 'Live research isn’t connected yet. No keys are needed.'
+            : 'Not verified. Credentials are checked when research starts.'}
         </p>
         <div className="a-actions">
-          <button className="f-black" disabled={saving}>
+          <button className="f-black" disabled={saving || PORTFOLIO_MODE}>
             {saving
               ? 'Starting…'
               : continueCompany

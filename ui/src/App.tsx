@@ -43,7 +43,11 @@ export default function App() {
     openSettings,
     saved,
   } = useWorkspace();
-  const portfolioNotice = PORTFOLIO_MODE && page !== 'home' && !(page === 'report' && route.sample);
+  const portfolioNotice =
+    PORTFOLIO_MODE &&
+    page !== 'home' &&
+    page !== 'settings' &&
+    !(page === 'report' && route.sample);
   return (
     <div id="firmly-direction" className={page === 'home' ? 'f-homepage' : ''}>
       <a className="skip-link" href="#main-content">

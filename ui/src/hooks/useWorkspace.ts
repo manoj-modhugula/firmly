@@ -146,8 +146,11 @@ export function useWorkspace() {
   }, [route.job]);
   useEffect(() => {
     const caption =
-      PORTFOLIO_MODE && route.page !== 'home' && !(route.page === 'report' && route.sample)
-        ? 'Portfolio preview'
+      PORTFOLIO_MODE &&
+      route.page !== 'home' &&
+      route.page !== 'settings' &&
+      !(route.page === 'report' && route.sample)
+        ? 'Live research'
         : route.page === 'home'
           ? 'Know more. Be sure.'
           : route.page === 'report'

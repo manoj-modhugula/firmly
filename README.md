@@ -53,7 +53,7 @@ See [Architecture](docs/ARCHITECTURE.md), [Validation](docs/VALIDATION.md), and 
 
 ### Portfolio on Vercel
 
-Import this repository with **Root Directory** set to `ui`. The included `ui/vercel.json` builds the portfolio version with `npm run build:portfolio`. It serves the homepage, saved Cursor report, source links, and a downloadable PDF without a backend or API keys. Research and settings actions explain that live research is not connected and offer the sample report.
+Import this repository with **Root Directory** set to `ui`. The included `ui/vercel.json` builds the portfolio version with `npm run build:portfolio`. It serves the homepage, saved Cursor report, source links, and a downloadable PDF without a backend or API keys. Research actions explain that live research is not connected and offer the sample report. Settings retain the full layout with a short availability notice; connection inputs and Apply settings are disabled in this build.
 
 The build mode is selected by `ui/.env.portfolio`, which contains a public feature flag only. The regular `npm run build --prefix ui` keeps the full API-backed application. The portfolio PDF in `ui/public/samples/cursor-report.pdf` is exported from `SAMPLE_REPORT` using `ReportPDFExporter`; regenerate it when updating the saved report.
 

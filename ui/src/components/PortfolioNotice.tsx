@@ -14,8 +14,8 @@ export function PortfolioNotice({
       </div>
       <h1>Explore Firmly</h1>
       <p className="a-sub" role="status">
-        Live research isn’t connected on this portfolio preview. Explore the Cursor report to see
-        the research, sources, and briefing.
+        Live research isn’t connected yet. Explore the Cursor report to see the research, sources,
+        and briefing.
       </p>
       <div className="a-actions">
         <button className="f-black" onClick={onSample}>
