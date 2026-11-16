@@ -143,7 +143,17 @@ export function useWorkspace() {
     }
   }, [route.job]);
   useEffect(() => {
-    document.title = `${route.page === 'home' ? 'Company research, in perspective' : route.page === 'report' ? `${route.sample ? SAMPLE_COMPANY.company : reports[route.job || '']?.company || company.company} · Report` : route.page === 'settings' ? 'Research settings' : route.page === 'progress' ? 'Research in progress' : 'Research'} — Firmly`;
+    const caption =
+      route.page === 'home'
+        ? 'Know more. Be sure.'
+        : route.page === 'report'
+          ? `${route.sample ? SAMPLE_COMPANY.company : reports[route.job || '']?.company || company.company}: Report`
+          : route.page === 'settings'
+            ? 'Research settings'
+            : route.page === 'progress'
+              ? 'Research in progress'
+              : 'Research';
+    document.title = `Firmly: ${caption}`;
   }, [route, company.company, reports]);
   useEffect(() => {
     if (!toast) return;
