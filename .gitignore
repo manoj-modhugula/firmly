@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+!ui/.env.portfolio
 .venv/
 __pycache__/
 *.pyc

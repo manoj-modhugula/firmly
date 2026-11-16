@@ -85,7 +85,7 @@ export function Report({
     setPDFError('');
     setDownloaded(false);
     try {
-      await exportPDF(report, company);
+      await exportPDF(report, company, sample);
       setDownloaded(true);
     } catch {
       setPDFError('The PDF couldn’t be created. Your report is still available.');

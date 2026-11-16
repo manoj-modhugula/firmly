@@ -1,4 +1,5 @@
 import { AUTOMATIC_MODEL_ID } from '../lib/connections';
+import { PORTFOLIO_MODE } from '../lib/runtime';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useResearch, type ResearchFailure } from './useResearch';
 import { useSettingsNavigation } from './useSettingsNavigation';
@@ -119,7 +120,7 @@ export function useWorkspace() {
       return { ...previous, [id]: { content, company: job.company } };
     });
   }, []);
-  const research = useResearch(jobId, onComplete, onFailed, onSnapshot);
+  const research = useResearch(PORTFOLIO_MODE ? null : jobId, onComplete, onFailed, onSnapshot);
   useEffect(() => {
     if (route.page !== 'progress' || route.job !== jobId) return;
     if (jobStatus === 'completed') go({ ...route, page: 'report' }, true);
@@ -127,6 +128,7 @@ export function useWorkspace() {
       go({ ...route, page: pendingSubmission.current ? 'connection' : 'failed' }, true);
   }, [route, jobId, jobStatus, go]);
   useEffect(() => {
+    if (PORTFOLIO_MODE) return;
     const controller = new AbortController();
     getConfig(controller.signal)
       .then(setConfig)
@@ -144,15 +146,17 @@ export function useWorkspace() {
   }, [route.job]);
   useEffect(() => {
     const caption =
-      route.page === 'home'
-        ? 'Know more. Be sure.'
-        : route.page === 'report'
-          ? `${route.sample ? SAMPLE_COMPANY.company : reports[route.job || '']?.company || company.company}: Report`
-          : route.page === 'settings'
-            ? 'Research settings'
-            : route.page === 'progress'
-              ? 'Research in progress'
-              : 'Research';
+      PORTFOLIO_MODE && route.page !== 'home' && !(route.page === 'report' && route.sample)
+        ? 'Portfolio preview'
+        : route.page === 'home'
+          ? 'Know more. Be sure.'
+          : route.page === 'report'
+            ? `${route.sample ? SAMPLE_COMPANY.company : reports[route.job || '']?.company || company.company}: Report`
+            : route.page === 'settings'
+              ? 'Research settings'
+              : route.page === 'progress'
+                ? 'Research in progress'
+                : 'Research';
     document.title = `Firmly: ${caption}`;
   }, [route, company.company, reports]);
   useEffect(() => {
@@ -179,6 +183,10 @@ export function useWorkspace() {
     go({ ...HOME, page: 'report', sample: true, section });
   };
   const start = async (value = settings) => {
+    if (PORTFOLIO_MODE) {
+      navigate('configuration');
+      return;
+    }
     if (startLock.current) return;
     if (busy && !pendingSubmission.current) {
       research.reconnect();

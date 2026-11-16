@@ -51,6 +51,14 @@ See [Architecture](docs/ARCHITECTURE.md), [Validation](docs/VALIDATION.md), and 
 
 ## Runtime and deployment
 
+### Portfolio on Vercel
+
+Import this repository with **Root Directory** set to `ui`. The included `ui/vercel.json` builds the portfolio version with `npm run build:portfolio`. It serves the homepage, saved Cursor report, source links, and a downloadable PDF without a backend or API keys. Research and settings actions explain that live research is not connected and offer the sample report.
+
+The build mode is selected by `ui/.env.portfolio`, which contains a public feature flag only. The regular `npm run build --prefix ui` keeps the full API-backed application. The portfolio PDF in `ui/public/samples/cursor-report.pdf` is exported from `SAMPLE_REPORT` using `ReportPDFExporter`; regenerate it when updating the saved report.
+
+### Full application
+
 The production command serves the compiled UI and API from one Python process. Use one worker: active jobs and replay history are held in process memory. Active jobs do not survive restart. Without MongoDB, creating new jobs cleans up completed reports older than one hour, or earlier when the 100-job capacity is reached. A reload reconnects by its opaque job URL; a missing job offers a new run instead of silently duplicating it.
 
 MongoDB is optional. Set `FIRMLY_STORAGE_URI` to persist completed reports in the `firmly` database. MongoDB errors do not discard an otherwise completed in-memory report. The optional database path has contract coverage only when a database is supplied; no database is configured for this local build.

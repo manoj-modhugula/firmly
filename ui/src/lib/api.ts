@@ -1,4 +1,5 @@
 import type { Company, Config, Job, Settings } from './types';
+import { PORTFOLIO_MODE } from './runtime';
 
 export class ApiError extends Error {
   constructor(
@@ -86,17 +87,20 @@ export function createResearch(
     20_000,
   );
 }
-export async function exportPDF(report: string, company: string) {
-  const blob = await request(
-    '/api/generate-pdf',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ report_content: report, company_name: company }),
-    },
-    30_000,
-    (response) => response.blob(),
-  );
+export async function exportPDF(report: string, company: string, sample = false) {
+  if (PORTFOLIO_MODE && !sample) throw new ApiError(503, 'Live research is not connected.');
+  const blob = PORTFOLIO_MODE
+    ? await request('/samples/cursor-report.pdf', {}, 30_000, (response) => response.blob())
+    : await request(
+        '/api/generate-pdf',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ report_content: report, company_name: company }),
+        },
+        30_000,
+        (response) => response.blob(),
+      );
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;

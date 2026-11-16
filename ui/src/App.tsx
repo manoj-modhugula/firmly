@@ -4,6 +4,8 @@ import { Home } from './components/Home';
 import { Settings } from './components/Settings';
 import { Progress } from './components/Progress';
 import { Notice } from './components/Notice';
+import { PortfolioNotice } from './components/PortfolioNotice';
+import { PORTFOLIO_MODE } from './lib/runtime';
 import { useWorkspace } from './hooks/useWorkspace';
 import type { Page } from './lib/types';
 import { HOME } from './lib/navigation';
@@ -41,6 +43,7 @@ export default function App() {
     openSettings,
     saved,
   } = useWorkspace();
+  const portfolioNotice = PORTFOLIO_MODE && page !== 'home' && !(page === 'report' && route.sample);
   return (
     <div id="firmly-direction" className={page === 'home' ? 'f-homepage' : ''}>
       <a className="skip-link" href="#main-content">
@@ -77,7 +80,10 @@ export default function App() {
             onStart={focusCompany}
           />
         )}
-        {page === 'settings' && (
+        {portfolioNotice && (
+          <PortfolioNotice onSample={() => openSample()} onBack={() => navigate('home')} />
+        )}
+        {!portfolioNotice && page === 'settings' && (
           <Settings
             value={settings}
             config={config}
@@ -87,7 +93,7 @@ export default function App() {
             saving={starting}
           />
         )}
-        {page === 'progress' && (
+        {!portfolioNotice && page === 'progress' && (
           <Progress
             company={reports[jobId || '']?.company || company.company || 'your company'}
             events={research.events}
@@ -95,7 +101,8 @@ export default function App() {
             reconnecting={research.reconnecting}
           />
         )}
-        {page === 'report' &&
+        {!portfolioNotice &&
+          page === 'report' &&
           (saved?.content ? (
             <Suspense
               fallback={
@@ -119,29 +126,30 @@ export default function App() {
               Retrieving your report…
             </main>
           ))}
-        {(['configuration', 'failed', 'unavailable', 'connection'] as Page[]).includes(page) && (
-          <Notice
-            kind={page as 'configuration' | 'failed' | 'unavailable' | 'connection'}
-            message={
-              error || 'This report is no longer available. You can begin another research run.'
-            }
-            company={company.company}
-            busy={starting}
-            pendingSubmission={hasPendingSubmission}
-            onPrimary={
-              page === 'configuration'
-                ? openSettings
-                : page === 'connection'
-                  ? () => void reconnect()
-                  : page === 'unavailable'
-                    ? newResearch
-                    : () => void start()
-            }
-            onRetrySubmission={() => void start()}
-            onBack={focusCompany}
-            onSample={() => openSample()}
-          />
-        )}
+        {!portfolioNotice &&
+          (['configuration', 'failed', 'unavailable', 'connection'] as Page[]).includes(page) && (
+            <Notice
+              kind={page as 'configuration' | 'failed' | 'unavailable' | 'connection'}
+              message={
+                error || 'This report is no longer available. You can begin another research run.'
+              }
+              company={company.company}
+              busy={starting}
+              pendingSubmission={hasPendingSubmission}
+              onPrimary={
+                page === 'configuration'
+                  ? openSettings
+                  : page === 'connection'
+                    ? () => void reconnect()
+                    : page === 'unavailable'
+                      ? newResearch
+                      : () => void start()
+              }
+              onRetrySubmission={() => void start()}
+              onBack={focusCompany}
+              onSample={() => openSample()}
+            />
+          )}
         <Footer />
       </div>
       {toast && (
