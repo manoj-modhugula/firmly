@@ -1,0 +1,10 @@
+.env
+.env.*
+.venv
+.git
+**/node_modules
+ui/dist
+**/__pycache__
+design-mocks
+output
+*.zip

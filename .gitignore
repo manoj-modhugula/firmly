@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+ui/dist/
+pdfs/
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Local review artifacts
+output/
+Firmly-*.zip
+.ruff_cache/
+coverage/
+design-mocks/
